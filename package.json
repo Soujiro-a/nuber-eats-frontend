@@ -23,7 +23,8 @@
   },
   "scripts": {
     "tailwind:build": "tailwind build -i ./src/styles/tailwind.css -o ./src/styles/styles.css",
-    "start": "npm run tailwind:build & react-scripts start",
+    "start": "npm run apollo:codegen & npm run tailwind:build & react-scripts start",
+    "apollo:codegen": "rm -rf src/api && apollo client:codegen src/api --target=typescript --outputFlat",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
