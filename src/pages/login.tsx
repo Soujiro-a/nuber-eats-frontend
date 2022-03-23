@@ -6,7 +6,7 @@ import { loginMutation, loginMutationVariables } from "../api/loginMutation";
 import nuberLogo from "../images/logo.svg";
 import { Button } from "../components/button";
 import { Link, useLocation } from "react-router-dom";
-import { authToken, isLoggedInVar } from "../apollo";
+import { authTokenVar, isLoggedInVar } from "../apollo";
 import { Helmet } from "react-helmet-async";
 import { LOCALSTORAGE_TOKEN } from "../constants";
 
@@ -49,7 +49,7 @@ export const Login = () => {
     } = data;
     if (ok && token) {
       localStorage.setItem(LOCALSTORAGE_TOKEN, token);
-      authToken(token);
+      authTokenVar(token);
       isLoggedInVar(true);
     }
   };
