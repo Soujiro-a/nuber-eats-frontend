@@ -24,7 +24,7 @@ export const ConfirmEmail = () => {
     } = data;
     if (ok && userData?.me.id) {
       client.writeFragment({
-        id: `User:userData.me.id`,
+        id: `User:${userData.me.id}`,
         fragment: gql`
           fragment VerifiedUser on User {
             verified

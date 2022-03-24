@@ -5,9 +5,15 @@ import { useMe } from "../hooks/useMe";
 import { NotFound } from "../pages/404";
 import { Restaurants } from "../pages/client/restaurants";
 import { ConfirmEmail } from "../pages/user/confirm-email";
+import { EditProfile } from "../pages/user/edit-profile";
 
 export const LoggedInRouter = () => {
   const { data, loading, error } = useMe();
+  const ClientRoute = [
+    { path: "/", element: <Restaurants /> },
+    { path: "/confirm", element: <ConfirmEmail /> },
+    { path: "/edit-profile", element: <EditProfile /> },
+  ];
   if (!data || loading || error) {
     return (
       <div className="h-screen flex justify-center items-center">
@@ -19,12 +25,10 @@ export const LoggedInRouter = () => {
     <Router>
       <Header />
       <Routes>
-        {
-          (data.me.role === "Client" && (
-            <Route path="/" element={<Restaurants />} />
-          ),
-          (<Route path="/confirm" element={<ConfirmEmail />} />))
-        }
+        {data.me.role === "Client" &&
+          ClientRoute.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
