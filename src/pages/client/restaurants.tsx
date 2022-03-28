@@ -1,10 +1,14 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import {
   restaurantsPageQuery,
   restaurantsPageQueryVariables,
 } from "../../api/restaurantsPageQuery";
 import { Restaurant } from "../../components/restaurant";
+import { RESTAURANT_FRAGMENT } from "../../fragments";
 
 const RESTAURANTS_QUERY = gql`
   query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -25,18 +29,16 @@ const RESTAURANTS_QUERY = gql`
       totalPages
       totalResults
       results {
-        id
-        name
-        coverImage
-        category {
-          name
-        }
-        address
-        isPromoted
+        ...RestaurantParts
       }
     }
   }
+  ${RESTAURANT_FRAGMENT}
 `;
+
+interface IFormProps {
+  searchTerm: string;
+}
 
 export const Restaurants = () => {
   const [page, setPage] = useState(1);
@@ -52,12 +54,26 @@ export const Restaurants = () => {
   });
   const onPrevPageClick = () => setPage((current) => current - 1);
   const onNextPageClick = () => setPage((current) => current + 1);
+  const { register, handleSubmit, getValues } = useForm<IFormProps>();
+  const navigate = useNavigate();
+  const onSearchSubmit = () => {
+    const { searchTerm } = getValues();
+    navigate(`/search?term=${searchTerm}`);
+  };
   return (
     <div>
-      <form className="bg-gray-800 w-full py-40 flex items-center justify-center">
+      <Helmet>
+        <title>Home | Nuber Eats</title>
+      </Helmet>
+      <form
+        onSubmit={handleSubmit(onSearchSubmit)}
+        className="bg-gray-800 w-full py-40 flex items-center justify-center"
+      >
         <input
+          {...register("searchTerm", { required: true, min: 3 })}
+          name="searchTerm"
           type="Search"
-          className="input rounded-md border-0 w-3/12"
+          className="input rounded-md border-0 w-3/4 md:w-3/12"
           placeholder="Search Restaurants..."
         />
       </form>
@@ -79,7 +95,7 @@ export const Restaurants = () => {
               </div>
             ))}
           </div>
-          <div className="grid mt-16 grid-cols-3 gap-x-5 gap-y-10">
+          <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
             {data?.restaurants.results?.map((restaurant, index) => (
               <Restaurant
                 id={restaurant.id + ""}
