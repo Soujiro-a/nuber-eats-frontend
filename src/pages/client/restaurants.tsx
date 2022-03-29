@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,8 @@ import {
 import { Restaurant } from "../../components/restaurant";
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { Category as CategoryComponent } from "../../components/category";
+import { usePage } from "../../hooks/usePage";
+import { Page } from "../../components/page";
 
 const RESTAURANTS_QUERY = gql`
   query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -39,7 +41,7 @@ interface IFormProps {
 }
 
 export const Restaurants = () => {
-  const [page, setPage] = useState(1);
+  const { page, onPrevPageClick, onNextPageClick } = usePage();
   const { data, loading } = useQuery<
     restaurantsPageQuery,
     restaurantsPageQueryVariables
@@ -50,8 +52,7 @@ export const Restaurants = () => {
       },
     },
   });
-  const onPrevPageClick = () => setPage((current) => current - 1);
-  const onNextPageClick = () => setPage((current) => current + 1);
+
   const { register, handleSubmit, getValues } = useForm<IFormProps>();
   const navigate = useNavigate();
   const onSearchSubmit = () => {
@@ -98,31 +99,12 @@ export const Restaurants = () => {
               />
             ))}
           </div>
-          <div className="grid grid-cols-3 text-center max-w-md items-center mx-auto mt-10">
-            {page > 1 ? (
-              <button
-                onClick={onPrevPageClick}
-                className="font-medium text-2xl focus:outline-none"
-              >
-                &larr;
-              </button>
-            ) : (
-              <div></div>
-            )}
-            <span>
-              Page {page} of {data?.restaurants.totalPages}
-            </span>
-            {page !== data?.restaurants.totalPages ? (
-              <button
-                onClick={onNextPageClick}
-                className="font-medium text-2xl focus:outline-none"
-              >
-                &rarr;
-              </button>
-            ) : (
-              <div></div>
-            )}
-          </div>
+          <Page
+            page={page}
+            totalPages={data?.restaurants.totalPages!}
+            onPrevPageClick={onPrevPageClick}
+            onNextPageClick={onNextPageClick}
+          />
         </div>
       )}
     </div>

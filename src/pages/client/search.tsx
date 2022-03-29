@@ -1,15 +1,18 @@
 import { gql, useLazyQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   searchRestaurant,
   searchRestaurantVariables,
 } from "../../api/searchRestaurant";
+import { Page } from "../../components/page";
+import { Restaurant } from "../../components/restaurant";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
+import { usePage } from "../../hooks/usePage";
 
 const SEARCH_RESTAURANT = gql`
-  query searchRestaurant($input: SearchRestaurantInput!) {
+  query searchPageQuery($input: SearchRestaurantInput!) {
     searchRestaurant(input: $input) {
       ok
       error
@@ -27,7 +30,7 @@ interface ILocationStateProps {
   search: string;
 }
 export const Search = () => {
-  const [page, setPage] = useState(1);
+  const { page, onPrevPageClick, onNextPageClick } = usePage();
 
   const [queryReadyToStart, { loading, data, called }] = useLazyQuery<
     searchRestaurant,
@@ -50,14 +53,34 @@ export const Search = () => {
         },
       },
     });
-    console.log(loading, data, called);
   }, [called, data, loading, navigate, page, queryReadyToStart, search]);
+
   return (
-    <h1>
+    <div>
       <Helmet>
         <title>Search | Nuber Eats</title>
       </Helmet>
-      Search page
-    </h1>
+      {!loading && (
+        <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
+          <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
+            {data?.searchRestaurant.restaurants?.map((restaurant, index) => (
+              <Restaurant
+                id={restaurant.id + ""}
+                coverImage={restaurant.coverImage}
+                name={restaurant.name}
+                categoryName={restaurant.category?.name}
+                key={index}
+              />
+            ))}
+          </div>
+          <Page
+            page={page}
+            totalPages={data?.searchRestaurant.totalPages!}
+            onPrevPageClick={onPrevPageClick}
+            onNextPageClick={onNextPageClick}
+          />
+        </div>
+      )}
+    </div>
   );
 };

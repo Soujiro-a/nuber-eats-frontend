@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import {
@@ -9,6 +9,8 @@ import {
 import { Restaurant } from "../../components/restaurant";
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { Category as CategoryComponent } from "../../components/category";
+import { Page } from "../../components/page";
+import { usePage } from "../../hooks/usePage";
 
 const CATEGORY_QUERY = gql`
   query categoryPageQuery($input: CategoryInput!) {
@@ -37,7 +39,7 @@ const CATEGORY_QUERY = gql`
 `;
 
 export const Category = () => {
-  const [page, setPage] = useState(1);
+  const { page, onPrevPageClick, onNextPageClick } = usePage();
   const { slug } = useParams();
   const { data, loading } = useQuery<
     categoryPageQuery,
@@ -50,8 +52,6 @@ export const Category = () => {
       },
     },
   });
-  const onPrevPageClick = () => setPage((current) => current - 1);
-  const onNextPageClick = () => setPage((current) => current + 1);
   return (
     <div>
       <Helmet>
@@ -82,31 +82,12 @@ export const Category = () => {
               />
             ))}
           </div>
-          <div className="grid grid-cols-3 text-center max-w-md items-center mx-auto mt-10">
-            {page > 1 ? (
-              <button
-                onClick={onPrevPageClick}
-                className="font-medium text-2xl focus:outline-none"
-              >
-                &larr;
-              </button>
-            ) : (
-              <div></div>
-            )}
-            <span>
-              Page {page} of {data?.category.totalPages}
-            </span>
-            {page !== data?.category.totalPages ? (
-              <button
-                onClick={onNextPageClick}
-                className="font-medium text-2xl focus:outline-none"
-              >
-                &rarr;
-              </button>
-            ) : (
-              <div></div>
-            )}
-          </div>
+          <Page
+            page={page}
+            totalPages={data?.category.totalPages!}
+            onPrevPageClick={onPrevPageClick}
+            onNextPageClick={onNextPageClick}
+          />
         </div>
       )}
     </div>
