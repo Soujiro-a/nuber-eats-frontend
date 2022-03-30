@@ -3,9 +3,9 @@ import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  searchRestaurant,
-  searchRestaurantVariables,
-} from "../../api/searchRestaurant";
+  searchPageQuery,
+  searchPageQueryVariables,
+} from "../../api/searchPageQuery";
 import { Page } from "../../components/page";
 import { Restaurant } from "../../components/restaurant";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
@@ -33,8 +33,8 @@ export const Search = () => {
   const { page, onPrevPageClick, onNextPageClick } = usePage();
 
   const [queryReadyToStart, { loading, data, called }] = useLazyQuery<
-    searchRestaurant,
-    searchRestaurantVariables
+    searchPageQuery,
+    searchPageQueryVariables
   >(SEARCH_RESTAURANT);
   const { search } = useLocation() as ILocationStateProps;
 
