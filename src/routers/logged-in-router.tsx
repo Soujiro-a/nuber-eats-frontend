@@ -4,6 +4,7 @@ import { Header } from "../components/header";
 import { useMe } from "../hooks/useMe";
 import { NotFound } from "../pages/404";
 import { Category } from "../pages/client/category";
+import { Restaurant } from "../pages/client/restaurant";
 import { Restaurants } from "../pages/client/restaurants";
 import { Search } from "../pages/client/search";
 import { ConfirmEmail } from "../pages/user/confirm-email";
@@ -17,6 +18,7 @@ export const LoggedInRouter = () => {
     { path: "/edit-profile", element: <EditProfile /> },
     { path: "/search", element: <Search /> },
     { path: "/category/:slug", element: <Category /> },
+    { path: "/restaurant/:id", element: <Restaurant /> },
   ];
   if (!data || loading || error) {
     return (
