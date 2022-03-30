@@ -1,5 +1,4 @@
 import { gql } from "@apollo/client";
-import { isUnionType } from "graphql";
 
 export const RESTAURANT_FRAGMENT = gql`
   fragment RestaurantParts on Restaurant {
