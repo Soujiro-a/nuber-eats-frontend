@@ -10,6 +10,7 @@ import { Page } from "../../components/page";
 import { Restaurant } from "../../components/restaurant";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
 import { usePage } from "../../hooks/usePage";
+import { useQueryParams } from "../../hooks/useQueryParams";
 
 const SEARCH_RESTAURANT = gql`
   query searchPageQuery($input: SearchRestaurantInput!) {
@@ -39,9 +40,9 @@ export const Search = () => {
   const { search } = useLocation() as ILocationStateProps;
 
   const navigate = useNavigate();
+  const query = useQueryParams("term");
 
   useEffect(() => {
-    const [_, query] = search.split("?term=");
     if (!query) {
       return navigate("/", { replace: true });
     }
@@ -53,7 +54,7 @@ export const Search = () => {
         },
       },
     });
-  }, [called, data, loading, navigate, page, queryReadyToStart, search]);
+  }, [called, data, loading, navigate, page, query, queryReadyToStart, search]);
 
   return (
     <div>
