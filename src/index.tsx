@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
+import { App } from "./components/app";
 import reportWebVitals from "./reportWebVitals";
 import "./styles/styles.css";
 import { ApolloProvider } from "@apollo/client";
