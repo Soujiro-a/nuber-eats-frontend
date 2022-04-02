@@ -7,11 +7,7 @@ import { ME_QUERY } from "../../hooks/useMe";
 
 describe("Header", () => {
   it("이메일 인증 요구 배너가 달린 헤더가 렌더링됩니다.", async () => {
-<<<<<<< HEAD
     render(
-=======
-    const { debug } = render(
->>>>>>> 3a87515c5e54917176161f01573f7132dabf2084
       <MockedProvider
         mocks={[
           {
@@ -42,11 +38,7 @@ describe("Header", () => {
     screen.getByText("이메일 인증을 완료해주세요");
   });
   it("이메일 인증 요구 배너가 없는 헤더가 렌더링됩니다.", async () => {
-<<<<<<< HEAD
     render(
-=======
-    const { debug } = render(
->>>>>>> 3a87515c5e54917176161f01573f7132dabf2084
       <MockedProvider
         mocks={[
           {
