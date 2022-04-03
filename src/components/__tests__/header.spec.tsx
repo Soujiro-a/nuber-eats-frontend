@@ -5,7 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 import { ME_QUERY } from "../../hooks/useMe";
 
-describe("Header", () => {
+describe("<Header />", () => {
   it("이메일 인증 요구 배너가 달린 헤더가 렌더링됩니다.", async () => {
     render(
       <MockedProvider

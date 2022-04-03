@@ -3,7 +3,7 @@ import React from "react";
 import { Restaurant } from "../restaurant";
 import { BrowserRouter as Router } from "react-router-dom";
 
-describe("Restaurant", () => {
+describe("<Restaurant />", () => {
   it("레스토랑 컴포넌트가 렌더링 됩니다.", () => {
     const restaurantProps = {
       id: "1",
