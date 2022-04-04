@@ -13,7 +13,7 @@ describe("404 NotFound Page", () => {
         </Router>
       </HelmetProvider>
     );
-    await waitFor(async () => {
+    await waitFor(() => {
       expect(document.title).toBe("Not Found | Nuber Eats");
     });
   });
