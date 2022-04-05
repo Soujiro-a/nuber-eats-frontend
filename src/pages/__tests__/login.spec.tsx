@@ -1,12 +1,10 @@
-import { render, waitFor, screen } from "@testing-library/react";
 import React from "react";
 import { Login, LOGIN_MUTATION } from "../login";
-import { BrowserRouter as Router } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
 import { ApolloProvider } from "@apollo/client";
 import { createMockClient, MockApolloClient } from "mock-apollo-client";
 import userEvent from "@testing-library/user-event";
 import { LOCALSTORAGE_TOKEN } from "../../constants";
+import { render, waitFor, screen } from "../../test-utils";
 
 describe("<Login />", () => {
   let mockedClient: MockApolloClient;
@@ -15,11 +13,7 @@ describe("<Login />", () => {
     // eslint-disable-next-line testing-library/no-render-in-setup
     render(
       <ApolloProvider client={mockedClient}>
-        <HelmetProvider>
-          <Router>
-            <Login />
-          </Router>
-        </HelmetProvider>
+        <Login />
       </ApolloProvider>
     );
   });

@@ -1,7 +1,7 @@
-import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { isLoggedInVar } from "../../apollo";
 import { App } from "../app";
+import { render, screen, waitFor } from "../../test-utils";
 
 jest.mock("../../routers/logged-out-router", () => {
   return {

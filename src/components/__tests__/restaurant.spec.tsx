@@ -1,7 +1,6 @@
-import { render, screen } from "@testing-library/react";
 import React from "react";
 import { Restaurant } from "../restaurant";
-import { BrowserRouter as Router } from "react-router-dom";
+import { render, screen } from "../../test-utils";
 
 describe("<Restaurant />", () => {
   it("레스토랑 컴포넌트가 렌더링 됩니다.", () => {
@@ -11,11 +10,7 @@ describe("<Restaurant />", () => {
       categoryName: "testCategory",
       coverImage: "testCoverImage",
     };
-    render(
-      <Router>
-        <Restaurant {...restaurantProps} />
-      </Router>
-    );
+    render(<Restaurant {...restaurantProps} />);
     screen.getByText(restaurantProps.name);
     screen.getByText(restaurantProps.categoryName);
 

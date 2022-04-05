@@ -1,9 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { Header } from "../header";
-import { BrowserRouter as Router } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 import { ME_QUERY } from "../../hooks/useMe";
+import { render, screen, waitFor } from "../../test-utils";
 
 describe("<Header />", () => {
   it("이메일 인증 요구 배너가 달린 헤더가 렌더링됩니다.", async () => {
@@ -27,9 +26,7 @@ describe("<Header />", () => {
           },
         ]}
       >
-        <Router>
-          <Header />
-        </Router>
+        <Header />
       </MockedProvider>
     );
     await waitFor(async () => {
@@ -58,9 +55,7 @@ describe("<Header />", () => {
           },
         ]}
       >
-        <Router>
-          <Header />
-        </Router>
+        <Header />
       </MockedProvider>
     );
     await waitFor(async () => {

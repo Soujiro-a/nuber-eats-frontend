@@ -1,18 +1,10 @@
-import { render, waitFor } from "@testing-library/react";
 import React from "react";
-import { HelmetProvider } from "react-helmet-async";
 import { NotFound } from "../404";
-import { BrowserRouter as Router } from "react-router-dom";
+import { render, waitFor } from "../../test-utils";
 
-describe("404 NotFound Page", () => {
+describe("<NotFound />", () => {
   it("404 NotFound 페이지를 렌더링합니다.", async () => {
-    render(
-      <HelmetProvider>
-        <Router>
-          <NotFound />
-        </Router>
-      </HelmetProvider>
-    );
+    render(<NotFound />);
     await waitFor(() => {
       expect(document.title).toBe("Not Found | Nuber Eats");
     });

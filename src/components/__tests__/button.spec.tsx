@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
 import React from "react";
 import { Button } from "../button";
+import { render, screen } from "../../test-utils";
 
 describe("<Button />", () => {
   it("클릭할 수 있는 버튼이 렌더링 됩니다.", () => {
