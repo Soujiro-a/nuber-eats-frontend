@@ -13,7 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
-const CREATE_ACCOUNT_MUTATION = gql`
+export const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccountMutation($createAccountInput: CreateAccountInput!) {
     createAccount(input: $createAccountInput) {
       ok
@@ -32,7 +32,6 @@ export const CreateAccount = () => {
   const {
     register,
     getValues,
-    watch,
     formState: { errors, isValid },
     handleSubmit,
   } = useForm<ICreateAccountForm>({
@@ -47,7 +46,7 @@ export const CreateAccount = () => {
       createAccount: { ok },
     } = data;
     if (ok) {
-      alert("계정을 생성하였습니다. 로그인 화면으로 이동합니다.");
+      alert("계정을 생성하였습니다. 로그인 화면으로 이동합니다");
       const { email, password } = getValues();
       navigate("/", { replace: true, state: { email, password } });
     }
@@ -72,7 +71,6 @@ export const CreateAccount = () => {
       });
     }
   };
-  console.log(watch());
   return (
     <div className="h-screen flex items-center flex-col mt-10 lg:mt-28">
       <Helmet>
@@ -89,7 +87,7 @@ export const CreateAccount = () => {
         >
           <input
             {...register("email", {
-              required: "이메일은 필수 입력 항목입니다.",
+              required: "이메일은 필수 입력 항목입니다",
               pattern:
                 /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             })}
@@ -107,11 +105,7 @@ export const CreateAccount = () => {
           )}
           <input
             {...register("password", {
-              required: "비밀번호는 필수 입력 항목입니다.",
-              minLength: {
-                value: 10,
-                message: "10글자 이상의 비밀번호를 입력해주세요",
-              },
+              required: "비밀번호는 필수 입력 항목입니다",
             })}
             name="password"
             type="password"
