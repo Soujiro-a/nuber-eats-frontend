@@ -6,7 +6,7 @@ import { useMe } from "../../hooks/useMe";
 import { useQueryParams } from "../../hooks/useQueryParams";
 import { Helmet } from "react-helmet-async";
 
-const VERIFY_EMAIL_MUTATION = gql`
+export const VERIFY_EMAIL_MUTATION = gql`
   mutation verifyEmail($input: VerifyEmailInput!) {
     verifyEmail(input: $input) {
       ok
