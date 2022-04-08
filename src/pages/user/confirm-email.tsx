@@ -38,7 +38,7 @@ export const ConfirmEmail = () => {
       navigate("/", { replace: true });
     }
   };
-  const [verifyEmail] = useMutation<verifyEmail, verifyEmailVariables>(
+  const [verifyEmailMutation] = useMutation<verifyEmail, verifyEmailVariables>(
     VERIFY_EMAIL_MUTATION,
     {
       onCompleted,
@@ -46,7 +46,7 @@ export const ConfirmEmail = () => {
   );
   const verifyCode = useQueryParams("code");
   useEffect(() => {
-    verifyEmail({
+    verifyEmailMutation({
       variables: {
         input: {
           code: verifyCode!,
