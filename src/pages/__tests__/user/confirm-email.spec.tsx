@@ -1,54 +1,34 @@
 import { ApolloProvider } from "@apollo/client";
-import { MockedProvider } from "@apollo/client/testing";
 import { createMockClient } from "mock-apollo-client";
 import React from "react";
-import { ME_QUERY } from "../../../hooks/useMe";
-import { render, waitFor } from "../../../test-utils";
-import { ConfirmEmail, VERIFY_EMAIL_MUTATION } from "../../user/confirm-email";
+import { render, waitFor, screen } from "../../../test-utils";
+import { ConfirmEmail } from "../../user/confirm-email";
+
+const mockEffect = jest.fn();
+
+jest.mock("react", () => {
+  const realModule = jest.requireActual("react");
+  return {
+    ...realModule,
+    useEffect: () => mockEffect,
+  };
+});
 
 describe("<ConfirmEmail />", () => {
   it("Confirm Email 페이지를 렌더링합니다.", async () => {
     const mockedClient = createMockClient();
     render(
       <ApolloProvider client={mockedClient}>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: ME_QUERY,
-              },
-              result: {
-                data: {
-                  me: {
-                    id: 1,
-                    email: "",
-                    role: "",
-                    verified: false,
-                  },
-                },
-              },
-            },
-          ]}
-        >
-          <ConfirmEmail />
-        </MockedProvider>
+        <ConfirmEmail />
       </ApolloProvider>
-    );
-    const mockedMutationResponse = jest.fn().mockResolvedValue({
-      data: {
-        verifyEmail: {
-          ok: true,
-          error: "mutation-test-error", // error 부분 테스팅을 위한 임의 값 설정
-          __typename: "User",
-        },
-      },
-    });
-    mockedClient.setRequestHandler(
-      VERIFY_EMAIL_MUTATION,
-      mockedMutationResponse
     );
     await waitFor(() => {
       expect(document.title).toBe("Confirm Email | Nuber Eats");
     });
+    screen.getByText("이메일 인증중입니다...");
+    screen.getByText("이 페이지를 끄지 말고 기다려주세요...");
+  });
+  afterAll(() => {
+    jest.clearAllMocks();
   });
 });
