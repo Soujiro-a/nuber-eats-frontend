@@ -22,12 +22,13 @@ describe("<ConfirmEmail />", () => {
         <ConfirmEmail />
       </ApolloProvider>
     );
-    await waitFor(() => {
+    await waitFor(async () => {
       expect(document.title).toBe("Confirm Email | Nuber Eats");
     });
     screen.getByText("이메일 인증중입니다...");
     screen.getByText("이 페이지를 끄지 말고 기다려주세요...");
   });
+
   afterAll(() => {
     jest.clearAllMocks();
   });
