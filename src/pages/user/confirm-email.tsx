@@ -23,6 +23,7 @@ export const ConfirmEmail = () => {
     const {
       verifyEmail: { ok },
     } = data;
+    console.log(ok);
     if (ok && userData?.me.id) {
       client.writeFragment({
         id: `User:${userData.me.id}`,

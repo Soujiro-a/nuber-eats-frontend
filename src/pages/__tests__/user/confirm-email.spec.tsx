@@ -1,6 +1,8 @@
 import { ApolloProvider } from "@apollo/client";
 import { createMockClient } from "mock-apollo-client";
 import React from "react";
+import { UserRole } from "../../../api/globalTypes";
+import { ME_QUERY } from "../../../hooks/useMe";
 import { render, waitFor, screen } from "../../../test-utils";
 import { ConfirmEmail } from "../../user/confirm-email";
 
@@ -17,6 +19,17 @@ jest.mock("react", () => {
 describe("<ConfirmEmail />", () => {
   it("Confirm Email 페이지를 렌더링합니다.", async () => {
     const mockedClient = createMockClient();
+    const mockeduseMeQueryResponse = jest.fn().mockResolvedValue({
+      data: {
+        me: {
+          id: 1,
+          email: "test@account.com",
+          role: UserRole.Client,
+          verified: false,
+        },
+      },
+    });
+    mockedClient.setRequestHandler(ME_QUERY, mockeduseMeQueryResponse);
     render(
       <ApolloProvider client={mockedClient}>
         <ConfirmEmail />

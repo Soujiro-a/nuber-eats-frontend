@@ -6,7 +6,7 @@ import { Button } from "../../components/button";
 import { useMe } from "../../hooks/useMe";
 import { Helmet } from "react-helmet-async";
 
-const EDIT_PROFILE_MUITATION = gql`
+export const EDIT_PROFILE_MUITATION = gql`
   mutation editProfile($input: EditProfileInput!) {
     editProfile(input: $input) {
       ok
