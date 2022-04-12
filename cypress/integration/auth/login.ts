@@ -13,12 +13,6 @@ describe("Log In", () => {
     cy.findByText("비밀번호는 필수 입력 항목입니다");
   });
   it("로그인을 진행합니다.", () => {
-    cy.visit("/");
-    cy.findByPlaceholderText("Email").type("client@account.com");
-    cy.findByPlaceholderText("Password").type("1234");
-    cy.findByRole("button")
-      .should("not.have.class", "pointer-events-none")
-      .click();
-    cy.window().its("localStorage.nuber-token").should("be.a", "string");
+    cy.login("client@account.com", "1234");
   });
 });

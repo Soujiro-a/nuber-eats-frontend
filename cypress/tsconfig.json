@@ -5,5 +5,5 @@
     "types": ["cypress", "@testing-library/cypress"],
     "outDir": "#"
   },
-  "include": ["./**/*.*"]
+  "include": ["./**/*.ts"]
 }
