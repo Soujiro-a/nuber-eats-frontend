@@ -2,6 +2,7 @@ describe("Create Account", () => {
   it("이메일, 비밀번호 검증, 이미 존재하는 계정일 경우에 발생하는 오류 메시지를 확인합니다.", () => {
     cy.visit("/");
     cy.findByText("계정 생성하기").click();
+    cy.assertTitle("Create Account");
     cy.findByPlaceholderText("Email").type("not@allowed");
     cy.findByText("유효한 이메일을 입력해주세요");
     cy.findByPlaceholderText("Email").clear();
@@ -19,13 +20,7 @@ describe("Create Account", () => {
       if (operationName && operationName === "createAccountMutation") {
         req.reply((res) => {
           res.send({
-            data: {
-              createAccount: {
-                ok: true,
-                error: null,
-                __typename: "CreateAccountOutput",
-              },
-            },
+            fixture: "auth/create-account.json",
           });
         });
       }
@@ -35,7 +30,7 @@ describe("Create Account", () => {
     cy.findByPlaceholderText("Password").type("1234");
     cy.findByRole("button").click();
     cy.wait(1000);
-    cy.title().should("eq", "Login | Nuber Eats");
+    cy.assertTitle("Login");
     cy.findByRole("button").click();
     cy.assertLoggedIn();
   });

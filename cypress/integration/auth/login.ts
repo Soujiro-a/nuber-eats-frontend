@@ -1,6 +1,6 @@
 describe("Log In", () => {
   it("로그인 페이지로 가야합니다.", () => {
-    cy.visit("/").title().should("eq", "Login | Nuber Eats");
+    cy.assertTitle("Login");
   });
   it("이메일, 비밀번호 검증 오류 메시지를 확인합니다.", () => {
     cy.visit("/");
