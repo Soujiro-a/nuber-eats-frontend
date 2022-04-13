@@ -31,6 +31,7 @@ declare global {
       assertLoggedIn(): void;
       assertLoggedOut(): void;
       login(email: string, password: string): void;
+      assertTitle(title: string): void;
     }
   }
 }
@@ -52,4 +53,8 @@ Cypress.Commands.add("login", (email: string, password: string) => {
     .should("not.have.class", "pointer-events-none")
     .click();
   cy.assertLoggedIn();
+});
+
+Cypress.Commands.add("assertTitle", (title: string) => {
+  cy.title().should("eq", `${title} | Nuber Eats`);
 });
