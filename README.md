@@ -16,6 +16,7 @@
 - [apollo-tooling](https://github.com/apollographql/apollo-tooling)
 - React Testing Library
 - Jest
+- Cypress
 
 ## :dart: 3. 구현 기능
 
@@ -57,6 +58,24 @@ createAccount에서 넘겨준 값들을 form의 기본값으로 설정해주려�
 그래서 state 옵션의 타입 설정을 위한 인터페이스를 만들어주어, useLocation을 불러올 때 as를 이용해 인터페이스를 붙여주었다.
 
 결과적으로, useLocation으로 불러온 변수에 state 값이 있으면 넣어주고, 없으면 빈 값으로 설정되게끔 하였다.
+
+</div>
+</details>
+
+<details>
+<summary>React Component Testing 중, custom hook이 mocking이 안되던 문제</summary>
+<div markdown="1">
+
+apollo client의 useQuery를 사용하는 custom hook을 사용중인데, 로그인 라우터들을 테스팅할 때 문제가 발생했었다.
+로그인 라우터들은 해당 페이지가 렌더링되자마자, useQuery를 사용하여 사용자 정보를 가져오는 쿼리를 보내 정보를 받아오게끔 하고 있는데, 해당 쿼리 값을 mocking이 되지 않는 문제가 발생했다.
+
+처음에는 Header 컴포넌트를 테스팅할 때 처럼 mockedProvider를 사용하여, 쿼리 값을 mocking하려고 했다. ([참고 링크](https://github.com/Soujiro-a/nuber-eats-frontend/blob/e66fef1e65b1f1775393205213e960ee30762474/src/components/__tests__/header.spec.tsx#L10))
+그런데, Header 컴포넌트 단일 테스트처럼 쿼리 하나만 mocking 하는거면 상관이 없는데, 버튼을 클릭하여 다른 쿼리를 보내는 작업도 있었기 때문에, 해당 쿼리 값도 mocking 해주어야해서, 해당 방법을 사용하기에 적절하지 않았고, 잘 되지도 않았다.
+
+꽤나 오랫동안 고민했던 문제였지만, 의외로 해결방법은 간단했다.
+페이지를 render하기전에 미리 쿼리에 mocking할 값을 설정해두는 것이었다.
+
+이 방법을 바로 떠올리지 못한 이유는, 이전의 페이지나 컴포넌트들을 테스팅할때는 (mockedProvider를 사용하지 않았을 때를 제외하고) 페이지가 렌더링되자마자 쿼리를 보낸 적이 없어서 항상 렌더링 후에 쿼리 값을 mocking하는 작업을 해주었었기때문에, 유연한 사고를 하지 못했던게 원인이라고 생각된다.
 
 </div>
 </details>
