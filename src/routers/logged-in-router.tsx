@@ -7,19 +7,25 @@ import { Category } from "../pages/client/category";
 import { Restaurant } from "../pages/client/restaurant";
 import { Restaurants } from "../pages/client/restaurants";
 import { Search } from "../pages/client/search";
+import { MyRestaurants } from "../pages/owner/my-restaurants";
 import { ConfirmEmail } from "../pages/user/confirm-email";
 import { EditProfile } from "../pages/user/edit-profile";
 
 export const LoggedInRouter = () => {
   const { data, loading, error } = useMe();
-  const ClientRoute = [
-    { path: "/", element: <Restaurants /> },
+  const commonRoutes = [
     { path: "/confirm", element: <ConfirmEmail /> },
     { path: "/edit-profile", element: <EditProfile /> },
+  ];
+  const clientRoutes = [
+    { path: "/", element: <Restaurants /> },
     { path: "/search", element: <Search /> },
     { path: "/category/:slug", element: <Category /> },
     { path: "/restaurant/:id", element: <Restaurant /> },
   ];
+
+  const ownerRoutes = [{ path: "/", element: <MyRestaurants /> }];
+
   if (!data || loading || error) {
     return (
       <div className="h-screen flex justify-center items-center">
@@ -32,9 +38,16 @@ export const LoggedInRouter = () => {
       <Header />
       <Routes>
         {data.me.role === "Client" &&
-          ClientRoute.map((route) => (
+          clientRoutes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
           ))}
+        {data.me.role === "Owner" &&
+          ownerRoutes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+        {commonRoutes.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
+        ))}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
