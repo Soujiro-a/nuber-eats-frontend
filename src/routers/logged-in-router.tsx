@@ -7,6 +7,7 @@ import { Category } from "../pages/client/category";
 import { Restaurant } from "../pages/client/restaurant";
 import { Restaurants } from "../pages/client/restaurants";
 import { Search } from "../pages/client/search";
+import { AddRestaurant } from "../pages/owner/add-restaurant";
 import { MyRestaurants } from "../pages/owner/my-restaurants";
 import { ConfirmEmail } from "../pages/user/confirm-email";
 import { EditProfile } from "../pages/user/edit-profile";
@@ -24,7 +25,10 @@ export const LoggedInRouter = () => {
     { path: "/restaurant/:id", element: <Restaurant /> },
   ];
 
-  const ownerRoutes = [{ path: "/", element: <MyRestaurants /> }];
+  const ownerRoutes = [
+    { path: "/", element: <MyRestaurants /> },
+    { path: "/add-restaurant", element: <AddRestaurant /> },
+  ];
 
   if (!data || loading || error) {
     return (
