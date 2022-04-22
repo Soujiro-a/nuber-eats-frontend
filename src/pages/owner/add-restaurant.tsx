@@ -111,13 +111,13 @@ export const AddRestaurant = () => {
     }
   };
   return (
-    <div className="container">
+    <div className="container flex flex-col items-center mt-52">
       <Helmet>
         <title>Add Restaurant | Nuber Eats</title>
       </Helmet>
-      <h1>Add Restaurants</h1>
+      <h1 className="font-semibold text-2xl mb-3">Add Restaurants</h1>
       <form
-        className="grid gap-3 mt-5 w-full mb-3"
+        className="grid max-w-screen-sm gap-3 w-full my-5"
         onSubmit={handleSubmit(onSubmit)}
       >
         <input
