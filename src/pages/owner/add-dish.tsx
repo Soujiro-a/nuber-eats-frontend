@@ -1,7 +1,14 @@
 import { gql, useMutation } from "@apollo/client";
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { useFieldArray, useForm } from "react-hook-form";
+import {
+  FieldArray,
+  FieldArrayMethodProps,
+  FieldArrayPath,
+  FieldValues,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { createDish, createDishVariables } from "../../api/createDish";
 import { Button } from "../../components/button";
@@ -24,6 +31,53 @@ interface IFormProps {
   [key: string]: string | any;
   options: { id?: string; choices?: { id: string; key: number }[] }[];
 }
+
+export type UseFieldArrayReturn<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TKeyName extends string = "id" | "choices"
+> = {
+  swap: (indexA: number, indexB: number) => void;
+  move: (indexA: number, indexB: number) => void;
+  prepend: (
+    value:
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    options?: FieldArrayMethodProps
+  ) => void;
+  append: (
+    value:
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    options?: FieldArrayMethodProps
+  ) => void;
+  remove: (index?: number | number[]) => void;
+  insert: (
+    index: number,
+    value:
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
+    options?: FieldArrayMethodProps
+  ) => void;
+  update: (
+    index: number,
+    value: Partial<FieldArray<TFieldValues, TFieldArrayName>>
+  ) => void;
+  replace: (
+    value:
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>
+      | Partial<FieldArray<TFieldValues, TFieldArrayName>>[]
+  ) => void;
+  fields: FieldArrayWithId<FieldValues, TFieldArrayName, TKeyName>[];
+};
+
+export type FieldArrayWithId<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TKeyName extends string = "id" | "choices"
+> =
+  | FieldArray<TFieldValues, TFieldArrayName> &
+      Record<TKeyName, string | { id: string; key: number }[]>;
 
 export const AddDish = () => {
   const { id } = useParams();
@@ -52,33 +106,47 @@ export const AddDish = () => {
   } = useForm<IFormProps>({
     mode: "onChange",
     defaultValues: {
-      options: [{}],
+      options: [],
     },
   });
-  const { fields, append, remove, update } = useFieldArray<IFormProps>({
+  const { fields, append, remove, update }: UseFieldArrayReturn = useFieldArray<
+    IFormProps,
+    string,
+    "id" | "choices"
+  >({
     control,
     name: "options",
   });
 
   const onSubmit = () => {
     const { name, price, description, ...rest } = getValues();
-    const optionsObject = fields.map(({ id }) => ({
+    const optionsObject = fields.map(({ id, choices }) => ({
       name: rest[`${id}-optionName`] + "",
+      choices:
+        Array.isArray(choices) &&
+        choices.map((choice) => {
+          console.log(choice.id);
+          return {
+            name: rest[`${choice.id}-choiceName`] + "",
+            extra: +rest[`${choice.id}-choiceNameExtra`],
+          };
+        }),
       extra: +rest[`${id}-optionNameExtra`],
     }));
     console.log(optionsObject);
-    createDishMutation({
-      variables: {
-        input: {
-          name,
-          price: +price!,
-          description,
-          restaurantId: +id!,
-          options: optionsObject,
-        },
-      },
-    });
-    navigate(-1);
+    console.log(rest);
+    // createDishMutation({
+    //   variables: {
+    //     input: {
+    //       name,
+    //       price: +price!,
+    //       description,
+    //       restaurantId: +id!,
+    //       options: optionsObject,
+    //     },
+    //   },
+    // });
+    // navigate(-1);
   };
   const onAddOptionClick = () => {
     append({ choices: [] });
@@ -100,11 +168,11 @@ export const AddDish = () => {
   };
   const onDeleteChoiceOptionClick = (
     keyToDelete: number,
-    field: any,
+    choices: { id: string; key: number }[],
     index: number
   ) => {
-    // @ts-ignore
-    const deletedChoices = field.choices?.filter((f) => f !== keyToDelete);
+    const deletedChoices = choices.filter((f) => f.key !== keyToDelete);
+    console.log(deletedChoices);
     update(index, { choices: [...deletedChoices] });
   };
   return (
@@ -155,34 +223,74 @@ export const AddDish = () => {
             Add Dish Option
           </span>
           {fields.map((field, index) => (
-            <div key={field.id} className="flex items-center mt-5">
+            <div
+              key={String(field.id)}
+              className="flex flex-row flex-wrap items-center mt-5"
+            >
               <input
                 {...register(`${field.id}-optionName`)}
                 name={`${field.id}-optionName`}
-                className="input text-sm mr-3"
+                className="input w-1/3 text-sm mr-3"
                 type="text"
                 placeholder="Option Name"
               />
               <input
                 {...register(`${field.id}-optionNameExtra`)}
                 name={`${field.id}-optionNameExtra`}
-                className="input text-sm"
+                className="input w-1/4 text-sm"
                 type="number"
                 min={0}
                 placeholder="Option Extra"
               />
               <span
-                className="cursor-pointer text-white bg-gray-900 ml-3 py-1 px-2"
+                className="cursor-pointer text-white bg-gray-900 ml-2 py-1 px-2"
                 onClick={() => onAddChoiceOptionClick(field, index)}
               >
                 Add Choice
               </span>
               <span
-                className="cursor-pointer text-white bg-red-500 ml-3 py-1 px-2"
+                className="cursor-pointer text-white bg-red-500 ml-2 py-1 px-2"
                 onClick={() => onDeleteOptionClick(index)}
               >
                 Delete Option
               </span>
+              {Array.isArray(field.choices) &&
+                field.choices.length !== 0 &&
+                field.choices.map((choice) => (
+                  <div
+                    key={choice.key}
+                    className="flex items-center mt-2 ml-16"
+                  >
+                    <input
+                      {...register(`${field.id}-choiceName`)}
+                      name={`${field.id}-choiceName`}
+                      className="input w-1/3 text-sm mr-3"
+                      type="text"
+                      placeholder="Choice Name"
+                    />
+                    <input
+                      {...register(`${field.id}-choiceNameExtra`)}
+                      name={`${field.id}-choiceNameExtra`}
+                      className="input w-1/4 text-sm"
+                      type="number"
+                      min={0}
+                      placeholder="Choice Extra"
+                    />
+
+                    <span
+                      className="cursor-pointer text-white bg-red-500 ml-2 py-1 px-2"
+                      onClick={() =>
+                        onDeleteChoiceOptionClick(
+                          choice.key,
+                          field.choices as { id: string; key: number }[],
+                          index
+                        )
+                      }
+                    >
+                      Delete Choice
+                    </span>
+                  </div>
+                ))}
             </div>
           ))}
         </div>
