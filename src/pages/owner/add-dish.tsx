@@ -1,5 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
-import React from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   FieldArray,
@@ -14,6 +14,7 @@ import { createDish, createDishVariables } from "../../api/createDish";
 import { Button } from "../../components/button";
 import { FormError } from "../../components/form-error";
 import { MY_RESTAURANT_QUERY } from "./my-restaurant";
+import { v4 as uuidv4 } from "uuid";
 
 const CREATE_DISH_MUTATION = gql`
   mutation createDish($input: CreateDishInput!) {
@@ -75,9 +76,7 @@ export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = "id" | "choices"
-> =
-  | FieldArray<TFieldValues, TFieldArrayName> &
-      Record<TKeyName, string | { id: string; key: number }[]>;
+> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
 
 export const AddDish = () => {
   const { id } = useParams();
@@ -109,7 +108,7 @@ export const AddDish = () => {
       options: [],
     },
   });
-  const { fields, append, remove, update }: UseFieldArrayReturn = useFieldArray<
+  const { fields, append, remove }: UseFieldArrayReturn = useFieldArray<
     IFormProps,
     string,
     "id" | "choices"
@@ -120,60 +119,55 @@ export const AddDish = () => {
 
   const onSubmit = () => {
     const { name, price, description, ...rest } = getValues();
-    const optionsObject = fields.map(({ id, choices }) => ({
-      name: rest[`${id}-optionName`] + "",
-      choices:
-        Array.isArray(choices) &&
-        choices.map((choice) => {
-          console.log(choice.id);
-          return {
-            name: rest[`${choice.id}-choiceName`] + "",
-            extra: +rest[`${choice.id}-choiceNameExtra`],
-          };
-        }),
-      extra: +rest[`${id}-optionNameExtra`],
+    const optionsObject = fields.map((field, index) => ({
+      name: rest[`${field.id}-optionName`] + "",
+      extra: +rest[`${field.id}-optionNameExtra`],
+      choices: choices[index].map((choice) => ({
+        name: rest[`${choice}-choiceName`] + "",
+        extra: +rest[`${choice}-choiceNameExtra`],
+      })),
     }));
+    console.log(rest.options);
+    console.log(choices);
     console.log(optionsObject);
-    console.log(rest);
-    // createDishMutation({
-    //   variables: {
-    //     input: {
-    //       name,
-    //       price: +price!,
-    //       description,
-    //       restaurantId: +id!,
-    //       options: optionsObject,
-    //     },
-    //   },
-    // });
-    // navigate(-1);
+    createDishMutation({
+      variables: {
+        input: {
+          name,
+          price: +price!,
+          description,
+          restaurantId: +id!,
+          options: optionsObject,
+        },
+      },
+    });
+    navigate(-1);
   };
+  const [choices, setChoices] = useState<string[][]>([]);
   const onAddOptionClick = () => {
-    append({ choices: [] });
+    append({});
+    setChoices((current) => [...current, []]);
   };
   const onDeleteOptionClick = (idToDelete: number) => {
     remove(idToDelete);
   };
-  const onAddChoiceOptionClick = (field: any, index: number) => {
-    const newValue = field.choices.length !== 0 ? field.choices[0]?.key + 1 : 0;
-    update(index, {
-      choices: [
-        {
-          key: newValue,
-          id: `${field.id}-optionChoices-${newValue}`,
-        },
-        ...field.choices,
-      ],
-    });
+  const onAddChoiceOptionClick = (index: number) => {
+    setChoices((current) =>
+      current.map((c, cIndex) => {
+        if (cIndex !== index) {
+          return c;
+        } else {
+          return [...c, uuidv4()];
+        }
+      })
+    );
   };
-  const onDeleteChoiceOptionClick = (
-    keyToDelete: number,
-    choices: { id: string; key: number }[],
-    index: number
-  ) => {
-    const deletedChoices = choices.filter((f) => f.key !== keyToDelete);
-    console.log(deletedChoices);
-    update(index, { choices: [...deletedChoices] });
+  const onDeleteChoiceOptionClick = (idToDelete: string) => {
+    setChoices((current) =>
+      current.map((c, cIndex) =>
+        c.filter((choiceId) => choiceId !== idToDelete)
+      )
+    );
   };
   return (
     <div className="container flex flex-col items-center mt-52">
@@ -224,7 +218,7 @@ export const AddDish = () => {
           </span>
           {fields.map((field, index) => (
             <div
-              key={String(field.id)}
+              key={field.id}
               className="flex flex-row flex-wrap items-center mt-5"
             >
               <input
@@ -244,7 +238,7 @@ export const AddDish = () => {
               />
               <span
                 className="cursor-pointer text-white bg-gray-900 ml-2 py-1 px-2"
-                onClick={() => onAddChoiceOptionClick(field, index)}
+                onClick={() => onAddChoiceOptionClick(index)}
               >
                 Add Choice
               </span>
@@ -254,23 +248,19 @@ export const AddDish = () => {
               >
                 Delete Option
               </span>
-              {Array.isArray(field.choices) &&
-                field.choices.length !== 0 &&
-                field.choices.map((choice) => (
-                  <div
-                    key={choice.key}
-                    className="flex items-center mt-2 ml-16"
-                  >
+              <>
+                {choices[index].map((choiceId, cIndex) => (
+                  <div key={choiceId} className="flex items-center mt-2 ml-16">
                     <input
-                      {...register(`${field.id}-choiceName`)}
-                      name={`${field.id}-choiceName`}
+                      {...register(`${choiceId}-choiceName`)}
+                      name={`${choiceId}-choiceName`}
                       className="input w-1/3 text-sm mr-3"
                       type="text"
                       placeholder="Choice Name"
                     />
                     <input
-                      {...register(`${field.id}-choiceNameExtra`)}
-                      name={`${field.id}-choiceNameExtra`}
+                      {...register(`${choiceId}-choiceNameExtra`)}
+                      name={`${choiceId}-choiceNameExtra`}
                       className="input w-1/4 text-sm"
                       type="number"
                       min={0}
@@ -279,18 +269,13 @@ export const AddDish = () => {
 
                     <span
                       className="cursor-pointer text-white bg-red-500 ml-2 py-1 px-2"
-                      onClick={() =>
-                        onDeleteChoiceOptionClick(
-                          choice.key,
-                          field.choices as { id: string; key: number }[],
-                          index
-                        )
-                      }
+                      onClick={() => onDeleteChoiceOptionClick(choiceId)}
                     >
                       Delete Choice
                     </span>
                   </div>
                 ))}
+              </>
             </div>
           ))}
         </div>
