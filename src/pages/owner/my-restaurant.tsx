@@ -3,7 +3,20 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { myRestaurant, myRestaurantVariables } from "../../api/myRestaurant";
-import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import { Dish } from "../../components/dish";
+import {
+  DISH_FRAGMENT,
+  ORDERS_FRAGMENT,
+  RESTAURANT_FRAGMENT,
+} from "../../fragments";
+import {
+  VictoryAxis,
+  VictoryChart,
+  VictoryLabel,
+  VictoryLine,
+  VictoryTheme,
+  VictoryVoronoiContainer,
+} from "victory";
 
 export const MY_RESTAURANT_QUERY = gql`
   query myRestaurant($input: MyRestaurantInput!) {
@@ -14,11 +27,15 @@ export const MY_RESTAURANT_QUERY = gql`
         menu {
           ...DishParts
         }
+        orders {
+          ...OrderParts
+        }
       }
     }
   }
   ${RESTAURANT_FRAGMENT}
   ${DISH_FRAGMENT}
+  ${ORDERS_FRAGMENT}
 `;
 
 export const MyRestaurant = () => {
@@ -55,9 +72,53 @@ export const MyRestaurant = () => {
           Buy Promotion &rarr;
         </Link>
         <div className="mt-10">
-          {data?.myRestaurant.restaurant?.menu.length === 0
-            ? "등록된 음식이 없습니다."
-            : null}
+          {data?.myRestaurant.restaurant?.menu.length === 0 ? (
+            "등록된 음식이 없습니다."
+          ) : (
+            <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
+              {data?.myRestaurant.restaurant?.menu.map((dish) => (
+                <Dish
+                  key={dish.id}
+                  name={dish.name}
+                  description={dish.description}
+                  price={dish.price}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="mt-20 mb-10">
+          <h4 className="text-center text-2xl font-medium">Sales</h4>
+          <div className="mx-auto">
+            <VictoryChart
+              theme={VictoryTheme.material}
+              width={window.innerWidth}
+              height={500}
+              domainPadding={50}
+              containerComponent={<VictoryVoronoiContainer />}
+            >
+              <VictoryLine
+                labels={({ datum }) => `₩${datum.y}`}
+                labelComponent={
+                  <VictoryLabel
+                    style={{ fontSize: 18 }}
+                    renderInPortal
+                    dy={-20}
+                  />
+                }
+                data={data?.myRestaurant.restaurant?.orders.map((order) => ({
+                  x: order.createdAt,
+                  y: order.total,
+                }))}
+                interpolation="natural"
+                style={{ data: { strokeWidth: 5 } }}
+              />
+              <VictoryAxis
+                style={{ tickLabels: { fontSize: 20 } }}
+                tickFormat={(tick) => new Date(tick).toLocaleDateString("ko")}
+              />
+            </VictoryChart>
+          </div>
         </div>
       </div>
     </div>
