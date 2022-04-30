@@ -47,6 +47,16 @@
   - User
     - [Confirm Email](https://github.com/Soujiro-a/nuber-eats-frontend/blob/main/src/pages/user/confirm-email.tsx)
     - [Edit Profile](https://github.com/Soujiro-a/nuber-eats-frontend/blob/main/src/pages/user/edit-profile.tsx)
+  - Client
+    - Restaurants
+    - Restaurant
+    - Search
+    - Category
+  - Owner
+    - Create Restaurant
+    - My Restaurants
+    - My Restaurant
+    - Create Dish
 
 </div>
 </details>
