@@ -70,13 +70,16 @@ export const Restaurant = () => {
       navigate(`/orders/${orderId}`, { replace: true });
     }
   };
-  const [createOrderMutation] = useMutation<createOrder, createOrderVariables>(
-    CREATE_ORDER_MUTATION,
-    {
-      onCompleted,
-    }
-  );
+  const [createOrderMutation, { loading: placingOrder }] = useMutation<
+    createOrder,
+    createOrderVariables
+  >(CREATE_ORDER_MUTATION, {
+    onCompleted,
+  });
   const triggerConfirmOrder = () => {
+    if (placingOrder) {
+      return;
+    }
     if (orderItems.length === 0) {
       alert("주문할 음식이 선택되지 않았습니다.");
       return;
