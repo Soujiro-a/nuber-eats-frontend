@@ -7,6 +7,7 @@ import { Category } from "../pages/client/category";
 import { Restaurant } from "../pages/client/restaurant";
 import { Restaurants } from "../pages/client/restaurants";
 import { Search } from "../pages/client/search";
+import { Order } from "../pages/order";
 import { AddDish } from "../pages/owner/add-dish";
 import { AddRestaurant } from "../pages/owner/add-restaurant";
 import { MyRestaurant } from "../pages/owner/my-restaurant";
@@ -19,6 +20,7 @@ export const LoggedInRouter = () => {
   const commonRoutes = [
     { path: "/confirm", element: <ConfirmEmail /> },
     { path: "/edit-profile", element: <EditProfile /> },
+    { path: "/orders/:id", element: <Order /> },
   ];
   const clientRoutes = [
     { path: "/", element: <Restaurants /> },
