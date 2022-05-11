@@ -1,8 +1,10 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
+import { editOrder, editOrderVariables } from "../api/editOrder";
 import { getOrder, getOrderVariables } from "../api/getOrder";
+import { OrderStatus, UserRole } from "../api/globalTypes";
 import { orderUpdates } from "../api/orderUpdates";
 import { FULL_ORDER_FRAGMENT } from "../fragments";
 import { useMe } from "../hooks/useMe";
@@ -29,9 +31,21 @@ const ORDER_SUBSCRIPTION = gql`
   ${FULL_ORDER_FRAGMENT}
 `;
 
+const EDIT_ORDER_MUTATION = gql`
+  mutation editOrder($input: EditOrderInput!) {
+    editOrder(input: $input) {
+      ok
+      error
+    }
+  }
+`;
+
 export const Order = () => {
   const { id } = useParams();
   const { data: userData } = useMe();
+  const [editOrderMutation] = useMutation<editOrder, editOrderVariables>(
+    EDIT_ORDER_MUTATION
+  );
   const { data, subscribeToMore } = useQuery<getOrder, getOrderVariables>(
     GET_ORDER,
     {
@@ -74,6 +88,16 @@ export const Order = () => {
       });
     }
   }, [data, id, subscribeToMore]);
+  const onButtonClick = (newStatus: OrderStatus) => {
+    editOrderMutation({
+      variables: {
+        input: {
+          id: +id!,
+          status: newStatus,
+        },
+      },
+    });
+  };
   return (
     <div>
       <Helmet>
@@ -111,14 +135,30 @@ export const Order = () => {
                 Status: {data?.getOrder.order?.status}
               </span>
             )}
-            {userData?.me.role === "Owner" && (
+            {userData?.me.role === UserRole.Owner && (
               <>
-                {data?.getOrder.order?.status === "Pending" && (
-                  <button className="btn">주문 수락하기</button>
+                {data?.getOrder.order?.status === OrderStatus.Pending && (
+                  <button
+                    onClick={() => onButtonClick(OrderStatus.Cooking)}
+                    className="btn"
+                  >
+                    주문 수락하기
+                  </button>
                 )}
-                {data?.getOrder.order?.status === "Cooking" && (
-                  <button className="btn">요리 완료</button>
+                {data?.getOrder.order?.status === OrderStatus.Cooking && (
+                  <button
+                    onClick={() => onButtonClick(OrderStatus.Cooked)}
+                    className="btn"
+                  >
+                    요리 완료
+                  </button>
                 )}
+                {data?.getOrder.order?.status !== OrderStatus.Cooking &&
+                  data?.getOrder.order?.status !== OrderStatus.Pending && (
+                    <span className=" text-center mt-5 mb-3  text-2xl text-lime-600">
+                      Status: {data?.getOrder.order?.status}
+                    </span>
+                  )}
               </>
             )}
           </div>
