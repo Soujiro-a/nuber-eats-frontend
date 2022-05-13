@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
+import { UserRole } from "../api/globalTypes";
 import { Header } from "../components/header";
 import { useMe } from "../hooks/useMe";
 import { NotFound } from "../pages/404";
@@ -7,6 +8,7 @@ import { Category } from "../pages/client/category";
 import { Restaurant } from "../pages/client/restaurant";
 import { Restaurants } from "../pages/client/restaurants";
 import { Search } from "../pages/client/search";
+import { Dashboard } from "../pages/driver/dashboard";
 import { Order } from "../pages/order";
 import { AddDish } from "../pages/owner/add-dish";
 import { AddRestaurant } from "../pages/owner/add-restaurant";
@@ -36,6 +38,8 @@ export const LoggedInRouter = () => {
     { path: "/restaurant/:id/add-dish", element: <AddDish /> },
   ];
 
+  const driverRoutes = [{ path: "/", element: <Dashboard /> }];
+
   if (!data || loading || error) {
     return (
       <div className="h-screen flex justify-center items-center">
@@ -47,12 +51,16 @@ export const LoggedInRouter = () => {
     <Router>
       <Header />
       <Routes>
-        {data.me.role === "Client" &&
+        {data.me.role === UserRole.Client &&
           clientRoutes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
           ))}
-        {data.me.role === "Owner" &&
+        {data.me.role === UserRole.Owner &&
           ownerRoutes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+        {data.me.role === UserRole.Delivery &&
+          driverRoutes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
           ))}
         {commonRoutes.map((route) => (
