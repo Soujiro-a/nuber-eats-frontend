@@ -161,6 +161,31 @@ export const Order = () => {
                   )}
               </>
             )}
+            {userData?.me.role === UserRole.Delivery && (
+              <>
+                {data?.getOrder.order?.status === OrderStatus.Cooked && (
+                  <button
+                    onClick={() => onButtonClick(OrderStatus.PickedUp)}
+                    className="btn"
+                  >
+                    픽업 하기
+                  </button>
+                )}
+                {data?.getOrder.order?.status === OrderStatus.PickedUp && (
+                  <button
+                    onClick={() => onButtonClick(OrderStatus.Delivered)}
+                    className="btn"
+                  >
+                    배달 완료
+                  </button>
+                )}
+              </>
+            )}
+            {data?.getOrder.order?.status === OrderStatus.Delivered && (
+              <span className=" text-center mt-5 mb-3  text-2xl text-lime-600">
+                Nuber Eats 서비스를 이용해주셔서 감사합니다!
+              </span>
+            )}
           </div>
         </div>
       </div>
