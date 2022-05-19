@@ -36,12 +36,12 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "tailwind:prodbuild":"NODE_ENV=prodiction npm run tailwind:build & npm run apollo:codegen",
+    "tailwind:prodbuild":"NODE_ENV=prodiction npm run tailwind:build",
     "tailwind:build": "tailwind build -i ./src/styles/tailwind.css -o ./src/styles/styles.css",
     "start": "npm run apollo:codegen & npm run tailwind:build & react-scripts start",
     "apollo:codegen": "rm -rf src/api && apollo client:codegen src/api --target=typescript --outputFlat",
     "prebuild": "npm run tailwind:prodbuild",
-    "build": "react-scripts build",
+    "build": "CI=false react-scripts build",
     "test": "react-scripts test",
     "test:cov": "npm run test -- --coverage --watchAll=false",
     "eject": "react-scripts eject"
