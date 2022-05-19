@@ -17,12 +17,18 @@ export const isLoggedInVar = makeVar(Boolean(token));
 export const authTokenVar = makeVar(token);
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:4000/graphql",
+  uri:
+    process.env.NODE_ENV === "production"
+      ? "https://soujiro-a-nuber-eats-backend.herokuapp.com/graphql"
+      : "http://localhost:4000/graphql",
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:4000/graphql",
+    url:
+      process.env.NODE_ENV === "production"
+        ? "wss://soujiro-a-nuber-eats-backend.herokuapp.com/graphql"
+        : "ws://localhost:4000/graphql",
     connectionParams: {
       "x-jwt": authTokenVar() || "",
     },
